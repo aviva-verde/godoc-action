@@ -38,9 +38,9 @@ git commit -m "Update documentation"
 GODOC_URL="https://$(dirname $(echo $GITHUB_REPOSITORY)).github.io/$REPO_NAME/$TAG/pkg/$MODULE_ROOT/index.html"
 
 if ! curl -sH "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$TAG" | grep '## GoDoc' > /dev/null; then
+  echo "updating tag: https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$TAG"
   curl -sH "Authorization: token $GITHUB_TOKEN" \
     -X PATCH \
-    -H "Accept: application/vnd.github.v3+json" \
     -d '{ "body": "## GoDoc\n'"$GODOC_URL"'" }' \
     "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$TAG"
 fi
