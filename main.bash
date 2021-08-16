@@ -26,7 +26,7 @@ rm -rf doc lib "$TAG" # Delete previous documents.
 mv localhost:8080/* .
 rm -rf localhost:8080
 find pkg -type f -exec sed -i "s#/lib/godoc#/$REPO_NAME/lib/godoc#g" {} +
-find . -maxdepth 1 -type f -delete # Delete first level files
+rm *
 
 git config --local user.email "action@github.com"
 git config --local user.name "GitHub Action"
