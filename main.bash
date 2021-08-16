@@ -26,6 +26,7 @@ rm -rf doc lib "$TAG" # Delete previous documents.
 mv localhost:8080/* .
 rm -rf localhost:8080
 find pkg -type f -exec sed -i "s#/lib/godoc#/$REPO_NAME/lib/godoc#g" {} +
+find PATH -maxdepth 1 -type f -delete # Delete first level files
 
 git config --local user.email "action@github.com"
 git config --local user.name "GitHub Action"
@@ -36,8 +37,10 @@ git commit -m "Update documentation"
 
 GODOC_URL="https://$(dirname $(echo $GITHUB_REPOSITORY)).github.io/$REPO_NAME/$TAG/pkg/$MODULE_ROOT/index.html"
 
-if ! curl -sH "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" | grep '## GoDoc' > /dev/null; then
+if ! curl -sH "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$TAG" | grep '## GoDoc' > /dev/null; then
   curl -sH "Authorization: token $GITHUB_TOKEN" \
+    -X PATCH \
+    -H "Accept: application/vnd.github.v3+json" \
     -d '{ "body": "## GoDoc\n'"$GODOC_URL"'" }' \
-    "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$TAG/comments"
+    "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$TAG"
 fi
